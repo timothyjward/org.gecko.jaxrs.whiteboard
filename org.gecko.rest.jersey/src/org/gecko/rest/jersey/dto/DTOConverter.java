@@ -1,10 +1,10 @@
 /**
- * Copyright (c) 2012 - 2018 Data In Motion and others.
+ * Copyright (c) 2012 - 2022 Data In Motion and others.
  * All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the terms of the 
- * Eclipse Public License v1.0 which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * 
  * Contributors:
  *     Data In Motion - initial API and implementation
@@ -65,7 +65,6 @@ import org.osgi.service.jaxrs.runtime.dto.FailedExtensionDTO;
 import org.osgi.service.jaxrs.runtime.dto.FailedResourceDTO;
 import org.osgi.service.jaxrs.runtime.dto.ResourceDTO;
 import org.osgi.service.jaxrs.runtime.dto.ResourceMethodInfoDTO;
-
 
 /**
  * Helper class to convert object into DTO's
@@ -365,7 +364,7 @@ public class DTOConverter {
 //	}
 	
 	public static <T> ResourceMethodInfoDTO[] getResourceMethodInfoDTOs(Class<T> clazz) {
-		Method[] methods = clazz.getDeclaredMethods();
+		Method[] methods = clazz.getMethods();
 		List<ResourceMethodInfoDTO> dtos = new ArrayList<>(methods.length);
 		Path resPath = clazz.getAnnotation(Path.class);
 		for (Method method : methods) {
@@ -461,6 +460,9 @@ public class DTOConverter {
 		else if(resPath != null && methodString != null) {
 			dto.path = resPath.value();
 			empty = false;
+		}
+		if (empty || dto == null) {
+			System.out.println("STOP " + method.getName());
 		}
 		return empty ? null : dto;
 	}

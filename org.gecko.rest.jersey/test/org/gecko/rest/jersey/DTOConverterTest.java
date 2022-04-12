@@ -33,6 +33,7 @@ import org.gecko.rest.jersey.resources.TestApplPathApplication;
 import org.gecko.rest.jersey.resources.TestExtension;
 import org.gecko.rest.jersey.resources.TestPathApplication;
 import org.gecko.rest.jersey.resources.TestResource;
+import org.gecko.rest.jersey.resources.TestSubResource;
 import org.gecko.rest.jersey.runtime.application.JerseyApplicationProvider;
 import org.gecko.rest.jersey.runtime.application.JerseyExtensionProvider;
 import org.gecko.rest.jersey.runtime.application.JerseyResourceProvider;
@@ -203,6 +204,52 @@ public class DTOConverterTest {
 		properties.put(ComponentConstants.COMPONENT_ID, Long.valueOf(13));
 		properties.put(JaxrsWhiteboardConstants.JAX_RS_NAME, "Myresource2");
 
+		resourceProvider = new JerseyResourceProvider<Object>(serviceObject, properties);
+		dto = DTOConverter.toResourceDTO(resourceProvider);
+		
+		assertNotNull(dto);
+		assertEquals("Myresource2", dto.name);
+		assertEquals(13, dto.serviceId);
+		methodInfoDTOs = dto.resourceMethods;
+		assertNotNull(methodInfoDTOs);
+		assertEquals(2, methodInfoDTOs.length);
+	}
+	
+	/**
+	 *  Test method for {@link org.eclipselabs.osgi.jersey.dto.DTOConverter#toResourceDTO(java.lang.Objectm java.util.Dictionary)}.
+	 */
+	@Test
+	public void testToSubResourceDTO() {
+		TestResource resource = new TestSubResource();
+		Map<String, Object> properties = new Hashtable<>();
+		when(serviceObject.getService()).thenReturn(resource);
+		JaxRsResourceProvider resourceProvider = new JerseyResourceProvider<Object>(serviceObject, properties);
+		
+		ResourceDTO dto = DTOConverter.toResourceDTO(resourceProvider);
+		assertNotNull(dto);
+		assertTrue(dto.name.startsWith("."));
+		assertEquals(-1, dto.serviceId);
+		ResourceMethodInfoDTO[] methodInfoDTOs = dto.resourceMethods;
+		assertNotNull(methodInfoDTOs);
+		assertEquals(2, methodInfoDTOs.length);
+		
+		properties.put(Constants.SERVICE_ID, Long.valueOf(12));
+		properties.put(JaxrsWhiteboardConstants.JAX_RS_NAME, "Myresource");
+		
+		resourceProvider = new JerseyResourceProvider<Object>(serviceObject, properties);
+		dto = DTOConverter.toResourceDTO(resourceProvider);
+		
+		assertNotNull(dto);
+		assertEquals("Myresource", dto.name);
+		assertEquals(12, dto.serviceId);
+		methodInfoDTOs = dto.resourceMethods;
+		assertNotNull(methodInfoDTOs);
+		assertEquals(2, methodInfoDTOs.length);
+		
+		properties = new Hashtable<>();
+		properties.put(ComponentConstants.COMPONENT_ID, Long.valueOf(13));
+		properties.put(JaxrsWhiteboardConstants.JAX_RS_NAME, "Myresource2");
+		
 		resourceProvider = new JerseyResourceProvider<Object>(serviceObject, properties);
 		dto = DTOConverter.toResourceDTO(resourceProvider);
 		
